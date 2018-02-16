@@ -63,7 +63,7 @@ public class PlayingScreen extends ScreenAdapter {
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
-        batch.draw((TextureRegion)anim.getKeyFrame(stateTime, false), 0, 0);
+        batch.draw((TextureRegion)anim.getKeyFrame(stateTime, true), 0, 0);
         pEffect.draw(batch, delta);
 
         batch.end();

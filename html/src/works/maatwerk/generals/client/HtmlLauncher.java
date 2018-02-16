@@ -3,6 +3,7 @@ package works.maatwerk.generals.client;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
+import com.github.czyzby.websocket.GwtWebSockets;
 import works.maatwerk.generals.Generals;
 
 public class HtmlLauncher extends GwtApplication {
@@ -46,6 +47,7 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
+                GwtWebSockets.initiate();
                 return new Generals();
         }
 }
