@@ -12,9 +12,7 @@ import works.maatwerk.generals.responselisteners.TestSocketListener;
 
 import java.io.StringWriter;
 
-public class NetworkTestsRunnable implements Runnable{
-    private String packet;
-    private Person teun;
+class NetworkTestsRunnable implements Runnable {
 
     private void testWebSockets() {
         Gdx.app.debug("Network", "Beginning websocket test");
@@ -25,11 +23,11 @@ public class NetworkTestsRunnable implements Runnable{
 
         Gdx.app.debug("JSON", "Serializing object to json");
         Json json = new Json(JsonWriter.OutputType.json);
-        teun = new Person();
+        Person teun = new Person();
         teun.setTeLaat(true);
         teun.setTeun("ja");
         teun.setTriggerLevel(9001);
-        packet = json.toJson(teun);
+        String packet = json.toJson(teun);
 
         Gdx.app.debug("Network", "Sending packet to websocket: " + packet);
         socket.send(packet);
