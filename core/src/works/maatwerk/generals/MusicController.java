@@ -17,22 +17,28 @@ public class MusicController extends InputAdapter {
     public boolean scrolled(int change) {
         super.scrolled(change);
             if (!Gdx.input.isKeyPressed(Input.Keys.ALT_LEFT)) return false;
-        System.out.println(change);
-        System.out.println(bgm.getVolume());
+
+        adjustVolume(change);
+
+        return true;
+    }
+
+    private void adjustVolume(int change) {
         float volumeChange = 0;
         if (change > 0) volumeChange = -0.1f;
         if (change < 0 && bgm.getVolume() < 1f) volumeChange = +0.1f;
         if (volumeChange < 0 && bgm.getVolume() < 0) {
             volumeChange = 0;
             bgm.pause();
+            Gdx.app.debug("Music", "Pausing music");
         }
         if (volumeChange > 0 && bgm.getVolume() < 0) {
             bgm.play();
+            Gdx.app.debug("Music", "Playing music");
         }
 
         bgm.setVolume(bgm.getVolume() + volumeChange);
-        System.out.println(bgm.getVolume());
+        Gdx.app.debug("Music", "Set volume to: " + volumeChange);
 
-        return true;
     }
 }

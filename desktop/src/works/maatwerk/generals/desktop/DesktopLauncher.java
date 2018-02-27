@@ -9,6 +9,9 @@ public class DesktopLauncher {
 	public static void main (String[] arg) {
 		CommonWebSockets.initiate();
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
+		config.height = 800;
+		config.width = 1200;
+		config.samples = 10;
 		new LwjglApplication(new Generals(), config);
 	}
 }
