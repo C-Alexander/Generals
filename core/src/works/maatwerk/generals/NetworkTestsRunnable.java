@@ -6,30 +6,32 @@ import com.badlogic.gdx.utils.Json;
 import com.badlogic.gdx.utils.JsonWriter;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSockets;
-import works.maatwerk.generals.models.FuckTeun;
+import works.maatwerk.generals.models.Person;
 import works.maatwerk.generals.responselisteners.AllGamesResponseListener;
+import works.maatwerk.generals.responselisteners.TestSocketListener;
 
 import java.io.StringWriter;
 
 public class NetworkTestsRunnable implements Runnable{
-    public String packet;
-    public FuckTeun teun;
+    private String packet;
+    private Person teun;
 
-    public void testWebSockets() {
+    private void testWebSockets() {
         Gdx.app.debug("Network", "Beginning websocket test");
         WebSocket socket = WebSockets.newSocket("ws://52.28.233.213:9000/game");
         socket.setSerializeAsString(true);
         socket.addListener(new TestSocketListener());
         socket.connect();
 
+        Gdx.app.debug("JSON", "Serializing object to json");
         Json json = new Json(JsonWriter.OutputType.json);
-        teun = new FuckTeun();
+        teun = new Person();
         teun.setTeLaat(true);
         teun.setTeun("ja");
         teun.setTriggerLevel(9001);
         packet = json.toJson(teun);
 
-        Gdx.app.debug("Network", "Sending packet to websocket: " + packet.toString());
+        Gdx.app.debug("Network", "Sending packet to websocket: " + packet);
         socket.send(packet);
 
     }
@@ -37,7 +39,7 @@ public class NetworkTestsRunnable implements Runnable{
     /**
      * Testing the http functions of libgdx
      */
-    public void testRestAPI() {
+    private void testRestAPI() {
         Gdx.app.debug("Network", "Testing REST API");
 
         //request to use for future networking
@@ -51,14 +53,18 @@ public class NetworkTestsRunnable implements Runnable{
 
     }
 
-    public void testRESTGet(Net.HttpRequest request) {
+    private void testRESTGet(Net.HttpRequest request) {
+        Gdx.app.debug("Network", "Testing REST GET");
+
         //get request
         request.setMethod(Net.HttpMethods.GET);
         request.setUrl("http://52.28.233.213:9000/games");
         Gdx.net.sendHttpRequest(request, new AllGamesResponseListener());
     }
 
-    public void testRESTPost(Net.HttpRequest request) {
+    private void testRESTPost(Net.HttpRequest request) {
+        Gdx.app.debug("Network", "Testing REST POST");
+
         request.setMethod(Net.HttpMethods.POST);
         request.setUrl("http://52.28.233.213:9000/games");
         request.setHeader("Content-Type", "application/json"); //needed so the server knows what to expect ;)
@@ -72,7 +78,9 @@ public class NetworkTestsRunnable implements Runnable{
         Gdx.net.sendHttpRequest(request, null);
     }
 
-    public Json getTestingJson() {
+    private Json getTestingJson() {
+        Gdx.app.debug("JSON", "Writing JSON objects from scratch");
+
         //creating a json body to post
         Json json = new Json(JsonWriter.OutputType.json);
         //write to a string
