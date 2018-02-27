@@ -1,69 +1,84 @@
 package works.maatwerk.generals;
 
-import com.badlogic.gdx.*;
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Buttons;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
+import works.maatwerk.generals.inputcontrollers.MusicController;
+import works.maatwerk.generals.inputcontrollers.ZoomController;
 
-public class PlayingScreen extends ScreenAdapter {
-    SpriteBatch batch;
-    OrthographicCamera camera;
-    InputMultiplexer multiplexer;
-    Animation anim;
-    ParticleEffect pEffect;
+class PlayingScreen extends ScreenAdapter {
+    private final SpriteBatch batch;
+    private final OrthographicCamera camera;
+    private final InputMultiplexer multiplexer;
+    private final ParticleEffect pEffect;
+    private final AssetManager assetManager;
+    private Animation anim;
+    private float stateTime = 0f;
 
-    AssetManager assetManager;
-
-    public PlayingScreen(AssetManager assetManager) {
+    PlayingScreen(AssetManager assetManager) {
         this.assetManager = assetManager;
+
+        batch = new SpriteBatch();
+        multiplexer = new InputMultiplexer();
+        pEffect = new ParticleEffect();
+        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
     }
 
     @Override
     public void show() {
-        TextureAtlas atlas = assetManager.get("character.atlas");
-        Music bgm = assetManager.get("data/music/megalovania.mp3");
-        bgm.play();
-
         initializeCamera();
-        batch = new SpriteBatch();
-        initializeInputMultiplexer(bgm);
-
-
-        initializeCharacterAnimations(atlas);
+        initializeInputMultiplexer();
+        initializeCameraInputController();
+        initializeCharacterAnimations();
         initializeParticleEffects();
 
+        startMusic();
+    }
 
+    private void startMusic() {
+        Gdx.app.debug("Music", "Starting Background Music");
+
+        Music bgm = assetManager.get("data/music/megalovania.mp3");
+        multiplexer.addProcessor(new MusicController(bgm));
+        bgm.play();
     }
 
     private void initializeParticleEffects() {
-        // TextureAtlas pAtlas = new TextureAtlas("fire");
-        pEffect = new ParticleEffect();
+        Gdx.app.debug("Particles", "Initializing Particle Effects");
 
         pEffect.load(Gdx.files.internal("fire"), Gdx.files.internal(""));
         pEffect.getEmitters().first().setPosition(Gdx.graphics.getWidth()/2,Gdx.graphics.getHeight()/2);
         pEffect.start();
     }
 
-    private void initializeCharacterAnimations(TextureAtlas atlas) {
+    private void initializeCharacterAnimations() {
+        Gdx.app.debug("Animations", "Initializing Character Animations");
+
+        TextureAtlas atlas = assetManager.get("character.atlas");
         anim = new Animation<TextureRegion>(0.1f, atlas.getRegions());
     }
 
-    private void initializeInputMultiplexer(Music bgm) {
-        multiplexer = new InputMultiplexer();
+    private void initializeInputMultiplexer() {
+        Gdx.app.debug("Input", "Initializing Input Multiplexer");
 
-        CameraInputController cameraInputController = initializeCameraInputController();
         multiplexer.addProcessor(new ZoomController(camera));
-        multiplexer.addProcessor(new MusicController(bgm));
-        multiplexer.addProcessor(cameraInputController);
+
         Gdx.input.setInputProcessor(multiplexer);
     }
 
-    private CameraInputController initializeCameraInputController() {
+    /**
+     * Initializes an input controller that controls the camera.
+     **/
+    private void initializeCameraInputController() {
+        Gdx.app.debug("Input", "Initializing CameraInputController");
+
         CameraInputController cameraInputController = new CameraInputController(camera);
         cameraInputController.translateUnits = 900;
         cameraInputController.scrollFactor = 0;
@@ -71,17 +86,27 @@ public class PlayingScreen extends ScreenAdapter {
         cameraInputController.rotateButton = -1000;
         cameraInputController.rotateAngle = 0;
         cameraInputController.translateButton = Buttons.LEFT;
-        return cameraInputController;
+
+        multiplexer.addProcessor(cameraInputController);
     }
 
     private void initializeCamera() {
-        camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+        Gdx.app.debug("Camera", "Initializing Camera");
+
         camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
         camera.update();
     }
 
-    public boolean fly = false;
-    float stateTime = 0f;
+    @Override
+    public void resize(int width, int height) {
+        super.resize(width, height);
+
+        Gdx.app.debug("Camera", "Resizing screen");
+
+        camera.viewportWidth = width;
+        camera.viewportHeight = height;
+        camera.update();
+    }
 
     @Override
     public void render(float delta) {
@@ -89,14 +114,15 @@ public class PlayingScreen extends ScreenAdapter {
         batch.setProjectionMatrix(camera.combined);
         stateTime += Gdx.graphics.getDeltaTime();
 
-        // System.out.println(camera.zoom);
         Gdx.gl.glClearColor(0, 0, 0, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
+
         batch.draw((TextureRegion)anim.getKeyFrame(stateTime, true), 0, 0);
         pEffect.draw(batch, delta);
 
         batch.end();
+
         if (pEffect.isComplete()) pEffect.reset();
     }
 

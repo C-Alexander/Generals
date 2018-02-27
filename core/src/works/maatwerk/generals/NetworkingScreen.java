@@ -2,19 +2,15 @@ package works.maatwerk.generals;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Net;
 import com.badlogic.gdx.ScreenAdapter;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.utils.Json;
-import com.badlogic.gdx.utils.Logger;
 
-public class NetworkingScreen extends ScreenAdapter {
+class NetworkingScreen extends ScreenAdapter {
 
-    private final NetworkTestsRunnable networkTestsRunnable = new NetworkTestsRunnable();
-    private Game game;
-    private AssetManager assetManager;
+    private final Game game;
+    private final AssetManager assetManager;
 
-    public NetworkingScreen(Game game, AssetManager assetManager) {
+    NetworkingScreen(Game game, AssetManager assetManager) {
         this.game = game;
         this.assetManager = assetManager;
     }
@@ -22,8 +18,6 @@ public class NetworkingScreen extends ScreenAdapter {
     @Override
     public void show() {
         super.show();
-
-        Gdx.app.setLogLevel(Logger.INFO);
 
         Gdx.app.debug("Network", "Starting NetworkingTests");
         new Thread(new NetworkTestsRunnable()).start();

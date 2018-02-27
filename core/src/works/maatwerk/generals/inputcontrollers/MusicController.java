@@ -1,13 +1,12 @@
-package works.maatwerk.generals;
+package works.maatwerk.generals.inputcontrollers;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.audio.Music;
 
 public class MusicController extends InputAdapter {
-    private Music bgm;
+    private final Music bgm;
 
     public MusicController(Music bgm) {
         this.bgm = bgm;
@@ -24,9 +23,7 @@ public class MusicController extends InputAdapter {
     }
 
     private void adjustVolume(int change) {
-        float volumeChange = 0;
-        if (change > 0) volumeChange = -0.1f;
-        if (change < 0 && bgm.getVolume() < 1f) volumeChange = +0.1f;
+        float volumeChange = getVolumeChange(change);
         if (volumeChange < 0 && bgm.getVolume() < 0) {
             volumeChange = 0;
             bgm.pause();
@@ -40,5 +37,12 @@ public class MusicController extends InputAdapter {
         bgm.setVolume(bgm.getVolume() + volumeChange);
         Gdx.app.debug("Music", "Set volume to: " + volumeChange);
 
+    }
+
+    private float getVolumeChange(int change) {
+        float volumeChange = 0;
+        if (change > 0) volumeChange = -0.1f;
+        if (change < 0 && bgm.getVolume() < 1f) volumeChange = +0.1f;
+        return volumeChange;
     }
 }

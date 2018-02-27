@@ -13,33 +13,20 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
-public class LoadingScreen extends ScreenAdapter {
+class LoadingScreen extends ScreenAdapter {
 
-    private Game game;
+    private final Game game;
 
     private FitViewport viewport;
     private OrthographicCamera camera;
-    private SpriteBatch batch;
+    private final SpriteBatch batch;
     private Texture logo;
     private Texture fullBar;
     private Texture emptyBar;
     private Vector2 logoPos;
     private Vector2 ebPos;
     private Vector2 fbPos;
-    private int loadedAssets;
-
-
-    public LoadingScreen(Game game, AssetManager assetManager) {
-        this.game = game;
-        this.assetManager = assetManager;
-
-        batch = new SpriteBatch();
-
-        initializeCamera();
-
-        loadLoadingBar();
-        initializeLoadingBar();
-    }
+    private final AssetManager assetManager;
 
     private void initializeCamera() {
         Gdx.app.debug("Camera", "Initializing");
@@ -69,7 +56,17 @@ public class LoadingScreen extends ScreenAdapter {
         fbPos = new Vector2((ebPos.x + (emptyBar.getWidth() / 2)) - (fullBar.getWidth()/2), (ebPos.y + (emptyBar.getHeight() / 2)) - (fullBar.getHeight()/2));
     }
 
-    AssetManager assetManager;
+    LoadingScreen(Game game, AssetManager assetManager) {
+        this.game = game;
+        this.assetManager = assetManager;
+
+        batch = new SpriteBatch();
+
+        initializeCamera();
+
+        loadLoadingBar();
+        initializeLoadingBar();
+    }
 
     @Override
     public void show() {

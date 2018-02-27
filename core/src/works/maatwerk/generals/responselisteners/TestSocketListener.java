@@ -1,31 +1,28 @@
-package works.maatwerk.generals;
+package works.maatwerk.generals.responselisteners;
 
-import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.github.czyzby.websocket.WebSocket;
 import com.github.czyzby.websocket.WebSocketAdapter;
-import com.github.czyzby.websocket.WebSocketListener;
 import com.github.czyzby.websocket.data.WebSocketCloseCode;
 
 public class TestSocketListener extends WebSocketAdapter {
 
     @Override
     public boolean onOpen(WebSocket webSocket) {
-        System.out.println(webSocket.isConnecting());
+        Gdx.app.log("Networking", "Websocket opened");
 
         return super.onOpen(webSocket);
     }
 
     @Override
     public boolean onClose(WebSocket webSocket, WebSocketCloseCode code, String reason) {
-        System.out.println(reason);
+        Gdx.app.error("Networking", "Websocket closed, reason: " + reason);
         return super.onClose(webSocket, code, reason);
     }
 
     @Override
     public boolean onMessage(WebSocket webSocket, String packet) {
-        Gdx.app.setLogLevel(Application.LOG_INFO);
-        Gdx.app.log("Websockets", packet);
+        Gdx.app.debug("Networking", "Got packet: " + packet);
         return super.onMessage(webSocket, packet);
     }
 }
